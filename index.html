@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndiWeather  | Modern Weather Forecasts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-water"></i> IndiWeather</h1>
+                <button id="sidebar-toggle" aria-label="Toggle sidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <div class="search-box">
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Search location...">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <button id="location-btn" class="location-btn" title="Use current location">
+                    <i class="fas fa-location-crosshairs"></i>
+                </button>
+            </div>
+            
+            <div class="recent-locations">
+                <h3>Recent Searches</h3>
+                <ul id="recent-locations-list">
+                    <!-- Recent locations will be populated by JS -->
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </button>
+                <p class="copyright">© <span id="current-year"></span> Weather Wave</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="current-location">
+                    <h2 id="city-name">Loading...</h2>
+                    <p id="current-date"></p>
+                </div>
+                <div class="unit-toggle">
+                    <button id="celsius-btn" class="active">°C</button>
+                    <button id="fahrenheit-btn">°F</button>
+                </div>
+            </header>
+
+            <div class="current-weather-container">
+                <div class="current-weather-card">
+                    <div class="weather-now">
+                        <div id="weather-icon" class="weather-icon">
+                            <i class="wi wi-day-sunny"></i>
+                        </div>
+                        <div class="temperature-display">
+                            <span id="current-temp">--</span>
+                            <span class="temp-unit">°C</span>
+                        </div>
+                        <p id="weather-description">Loading weather data...</p>
+                    </div>
+                    
+                    <div class="weather-details-grid">
+                        <div class="detail-card">
+                            <i class="wi wi-thermometer"></i>
+                            <div>
+                                <p class="detail-label">Feels Like</p>
+                                <p id="feels-like" class="detail-value">--°C</p>
+                            </div>
+                        </div>
+                        <div class="detail-card">
+                            <i class="wi wi-humidity"></i>
+                            <div>
+                                <p class="detail-label">Humidity</p>
+                                <p id="humidity" class="detail-value">--%</p>
+                            </div>
+                        </div>
+                        <div class="detail-card">
+                            <i class="wi wi-strong-wind"></i>
+                            <div>
+                                <p class="detail-label">Wind Speed</p>
+                                <p id="wind-speed" class="detail-value">-- km/h</p>
+                            </div>
+                        </div>
+                        <div class="detail-card">
+                            <i class="wi wi-barometer"></i>
+                            <div>
+                                <p class="detail-label">Pressure</p>
+                                <p id="pressure" class="detail-value">-- hPa</p>
+                            </div>
+                        </div>
+                        <div class="detail-card">
+                            <i class="wi wi-sunrise"></i>
+                            <div>
+                                <p class="detail-label">Sunrise</p>
+                                <p id="sunrise" class="detail-value">--:--</p>
+                            </div>
+                        </div>
+                        <div class="detail-card">
+                            <i class="wi wi-sunset"></i>
+                            <div>
+                                <p class="detail-label">Sunset</p>
+                                <p id="sunset" class="detail-value">--:--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <section class="aqi-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-wind"></i> Air Quality</h3>
+                </div>
+                <div id="aqi-container" class="aqi-card">
+                    <div class="aqi-value-container">
+                        <div class="aqi-value" id="aqi-value">--</div>
+                        <div class="aqi-level" id="aqi-level">Loading...</div>
+                    </div>
+                    <div class="aqi-components">
+                        <div class="aqi-component">
+                            <span class="component-label">CO</span>
+                            <span class="component-value" id="aqi-co">--</span>
+                        </div>
+                        <div class="aqi-component">
+                            <span class="component-label">NO<sub>2</sub></span>
+                            <span class="component-value" id="aqi-no2">--</span>
+                        </div>
+                        <div class="aqi-component">
+                            <span class="component-label">O<sub>3</sub></span>
+                            <span class="component-value" id="aqi-o3">--</span>
+                        </div>
+                        <div class="aqi-component">
+                            <span class="component-label">SO<sub>2</sub></span>
+                            <span class="component-value" id="aqi-so2">--</span>
+                        </div>
+                        <div class="aqi-component">
+                            <span class="component-label">PM2.5</span>
+                            <span class="component-value" id="aqi-pm25">--</span>
+                        </div>
+                        <div class="aqi-component">
+                            <span class="component-label">PM10</span>
+                            <span class="component-value" id="aqi-pm10">--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="forecast-section">
+                <div class="section-header">
+                    <h3><i class="far fa-calendar-alt"></i> 5-Day Forecast</h3>
+                </div>
+                <div id="forecast-container" class="forecast-cards">
+                    <!-- Forecast cards will be populated by JS -->
+                </div>
+            </section>
+            
+            <section class="hourly-forecast-section">
+                <div class="section-header">
+                    <h3><i class="far fa-clock"></i> Hourly Forecast</h3>
+                </div>
+                <div class="hourly-scroll-container">
+                    <div id="hourly-forecast" class="hourly-forecast">
+                        <!-- Hourly forecast will be populated by JS -->
+                    </div>
+                </div>
+            </section>
+            
+            <section class="map-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-map-marked-alt"></i> Weather Map</h3>
+                    <div class="map-controls">
+                        <button class="map-btn active" data-layer="temp_new">Temperature</button>
+                        <button class="map-btn" data-layer="clouds_new">Clouds</button>
+                        <button class="map-btn" data-layer="precipitation_new">Precipitation</button>
+                        <button class="map-btn" data-layer="wind_new">Wind</button>
+                    </div>
+                </div>
+                <div id="weather-map" class="weather-map"></div>
+            </section>
+        </main>
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading weather data...</p>
+    </div>
+    <!-- Add this section after the map section in index.html -->
+<section class="weather-alerts-section">
+    <div class="section-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> Weather Alerts</h3>
+    </div>
+    <div id="weather-alerts-container" class="weather-alerts">
+        <!-- Alerts will be populated by JS -->
+    </div>
+</section>
+
+<section class="weather-news-section">
+    <div class="section-header">
+        <h3><i class="far fa-newspaper"></i> News</h3>
+    </div>
+    <div id="weather-news-container" class="weather-news">
+        <!-- News will be populated by JS -->
+    </div>
+</section>
+<footer class="app-footer">
+    <p>Data provided by <a href="https://openweathermap.org/" target="_blank">OpenWeatherMap</a></p>
+    <p>© <span id="current-year"></span> WeatherSphere. All rights reserved.</p>
+</footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app2.js"></script>
+</body>
+</html>
